@@ -139,7 +139,7 @@
             font-size: 0.9rem;
         }
 
-        input[type="text"], select {
+        input[type="text"], input[type="number"], select {
             width: 100%;
             padding: 0.8rem;
             border: 1px solid var(--light-gold);
@@ -148,9 +148,19 @@
             transition: border-color 0.3s ease;
         }
 
-        input[type="text"]:focus, select:focus {
+        input[type="text"]:focus, input[type="number"]:focus, select:focus {
             outline: none;
             border-color: var(--gold-color);
+        }
+
+        /* Supprime les flèches du champ number */
+        input[type="number"]::-webkit-inner-spin-button,
+        input[type="number"]::-webkit-outer-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+        input[type="number"] {
+            -moz-appearance: textfield;
         }
 
         button {
@@ -221,13 +231,130 @@
                 font-size: 2rem;
             }
         }
+
+        .total-participants {
+            text-align: center;
+            margin-bottom: 2rem;
+            padding: 1rem;
+            background: linear-gradient(to right, rgba(197, 165, 114, 0.1), rgba(229, 213, 183, 0.1));
+            border-radius: 8px;
+            border: 1px solid var(--light-gold);
+        }
+
+        .total-participants .count {
+            display: block;
+            font-size: 2.5rem;
+            font-family: 'Cormorant Garamond', serif;
+            color: var(--gold-color);
+            font-weight: 600;
+            line-height: 1;
+            margin-bottom: 0.5rem;
+        }
+
+        .total-participants .label {
+            font-size: 0.9rem;
+            color: #666;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .accompagnant-field {
+            margin-bottom: 0.8rem;
+        }
+
+        .accompagnant-input {
+            width: 100%;
+            padding: 0.8rem;
+            border: 1px solid var(--light-gold);
+            border-radius: 4px;
+            font-size: 1rem;
+            transition: border-color 0.3s ease;
+        }
+
+        .accompagnant-input:focus {
+            outline: none;
+            border-color: var(--gold-color);
+        }
+
+        #presenceDetails {
+            background: rgba(197, 165, 114, 0.05);
+            padding: 1.5rem;
+            border-radius: 8px;
+            margin-bottom: 1.5rem;
+        }
+
+        #accompagnantsSection {
+            margin-top: 1rem;
+            padding-top: 1rem;
+            border-top: 1px solid var(--light-gold);
+        }
+
+        .number-input-container {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        input[type="number"] {
+            width: 100%;
+            padding: 0.8rem;
+            border: 1px solid var(--light-gold);
+            border-radius: 4px;
+            font-size: 1.2rem;
+            transition: border-color 0.3s ease;
+            -moz-appearance: textfield;
+            text-align: center;
+            font-family: 'Cormorant Garamond', serif;
+            color: var(--gold-color);
+        }
+
+        input[type="number"]::-webkit-inner-spin-button,
+        input[type="number"]::-webkit-outer-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+
+        input[type="number"]:focus {
+            outline: none;
+            border-color: var(--gold-color);
+        }
+
+        .number-controls {
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
+        }
+
+        .number-control {
+            width: 30px;
+            height: 30px;
+            padding: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(to right, var(--gold-color), var(--light-gold));
+            border: none;
+            border-radius: 4px;
+            color: white;
+            font-size: 1.2rem;
+            cursor: pointer;
+            transition: transform 0.2s ease;
+        }
+
+        .number-control:hover {
+            transform: scale(1.1);
+        }
+
+        .number-control:active {
+            transform: scale(0.95);
+        }
     </style>
 </head>
 <body>
     <div class="page-container">
         <!-- Page d'invitation -->
         <div class="page invitation-page">
-            <img src="{{ url_for('static', filename='carteInvitation.jpg') }}" alt="Invitation au mariage" class="invitation-image">
+            <img src="{{ url_for('static', filename='CarteInvitation.jpg') }}" alt="Invitation au mariage" class="invitation-image">
             <div class="swipe-indicator">
                 <span>Glissez pour répondre</span>
                 <div class="swipe-arrow"></div>
@@ -257,6 +384,21 @@
                             <option value="Non">Non, je ne pourrai pas être présent(e)</option>
                         </select>
                     </div>
+                    <div class="form-group" id="nombrePersonnesGroup" style="display: none;">
+                        <label for="nombre_personnes">Nombre total de personnes (vous inclus)</label>
+                        <div class="number-input-container">
+                            <input type="number"
+                                   id="nombre_personnes"
+                                   name="nombre_personnes"
+                                   min="1"
+                                   value="1"
+                                   required>
+                            <div class="number-controls">
+                                <button type="button" class="number-control" onclick="changeNumber(1)">+</button>
+                                <button type="button" class="number-control" onclick="changeNumber(-1)">−</button>
+                            </div>
+                        </div>
+                    </div>
                     <button type="submit">Confirmer ma réponse</button>
                 </form>
                 {% if message %}
@@ -270,67 +412,84 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
+            const presenceSelect = document.getElementById('presence');
+            const nombrePersonnesGroup = document.getElementById('nombrePersonnesGroup');
+            const nombrePersonnesInput = document.getElementById('nombre_personnes');
+
+            // Afficher/masquer le champ nombre de personnes
+            presenceSelect.addEventListener('change', function() {
+                if (this.value === 'Oui') {
+                    nombrePersonnesGroup.style.display = 'block';
+                    nombrePersonnesInput.required = true;
+                } else {
+                    nombrePersonnesGroup.style.display = 'none';
+                    nombrePersonnesInput.required = false;
+                    nombrePersonnesInput.value = '1';
+                }
+            });
+
+            // Gestion du swipe
             const pageContainer = document.querySelector('.page-container');
             let startX = 0;
             let currentX = 0;
-
-            // Gestion du toucher
-            pageContainer.addEventListener('touchstart', function(e) {
-                startX = e.touches[0].clientX;
-            });
-
-            pageContainer.addEventListener('touchmove', function(e) {
-                if (!startX) return;
-
-                currentX = e.touches[0].clientX;
-                const diff = startX - currentX;
-
-                // Si le swipe est suffisant et vers la gauche
-                if (diff > 50) {
-                    pageContainer.style.transform = 'translateX(-100vw)';
-                }
-                // Si le swipe est suffisant et vers la droite
-                else if (diff < -50) {
-                    pageContainer.style.transform = 'translateX(0)';
-                }
-            });
-
-            pageContainer.addEventListener('touchend', function() {
-                startX = null;
-            });
-
-            // Gestion de la souris
             let isDragging = false;
 
-            pageContainer.addEventListener('mousedown', function(e) {
+            // Fonctions utilitaires pour le swipe
+            function handleSwipeStart(x) {
+                startX = x;
                 isDragging = true;
-                startX = e.clientX;
-            });
+            }
 
-            pageContainer.addEventListener('mousemove', function(e) {
+            function handleSwipeMove(x) {
                 if (!isDragging) return;
 
-                currentX = e.clientX;
+                currentX = x;
                 const diff = startX - currentX;
 
+                // Limiter le swipe à gauche uniquement (vers le formulaire)
                 if (diff > 50) {
                     pageContainer.style.transform = 'translateX(-100vw)';
-                }
-                else if (diff < -50) {
+                } else if (diff < -50 && diff > -100) {
                     pageContainer.style.transform = 'translateX(0)';
                 }
-            });
+            }
 
-            pageContainer.addEventListener('mouseup', function() {
+            function handleSwipeEnd() {
                 isDragging = false;
                 startX = null;
+            }
+
+            // Gestion tactile
+            pageContainer.addEventListener('touchstart', (e) => {
+                handleSwipeStart(e.touches[0].clientX);
             });
 
-            pageContainer.addEventListener('mouseleave', function() {
-                isDragging = false;
-                startX = null;
+            pageContainer.addEventListener('touchmove', (e) => {
+                handleSwipeMove(e.touches[0].clientX);
             });
+
+            pageContainer.addEventListener('touchend', handleSwipeEnd);
+
+            // Gestion souris
+            pageContainer.addEventListener('mousedown', (e) => {
+                handleSwipeStart(e.clientX);
+            });
+
+            pageContainer.addEventListener('mousemove', (e) => {
+                handleSwipeMove(e.clientX);
+            });
+
+            pageContainer.addEventListener('mouseup', handleSwipeEnd);
+            pageContainer.addEventListener('mouseleave', handleSwipeEnd);
         });
+
+        // Fonction pour changer le nombre avec les boutons + et -
+        function changeNumber(delta) {
+            const input = document.getElementById('nombre_personnes');
+            const currentValue = parseInt(input.value) || 1;
+            const newValue = Math.max(1, currentValue + delta);
+            input.value = newValue;
+        }
     </script>
 </body>
 </html>
