@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Invitation - Confirmation de présence</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <img src="{{ url_for('static', filename='invitation.jpg') }}" alt="Carte d'invitation" class="invitation-card">
+        
+        <div class="form-container">
+            <h1>Confirmation de présence</h1>
+            
+            <form method="POST" action="{{ url_for('submit') }}">
+                <div class="form-group">
+                    <label for="nom">Nom</label>
+                    <input type="text" id="nom" name="nom" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="prenom">Prénom</label>
+                    <input type="text" id="prenom" name="prenom" required>
+                </div>
+
+                <div class="form-group">
+                    <label>Serez-vous présent(e) ?</label>
+                    <div class="radio-group">
+                        <input type="radio" id="present_oui" name="presence" value="Oui" required>
+                        <label for="present_oui">Oui</label>
+                        
+                        <input type="radio" id="present_non" name="presence" value="Non">
+                        <label for="present_non">Non</label>
+                    </div>
+                </div>
+
+                <button type="submit">Envoyer ma réponse</button>
+            </form>
+
+            {% if message %}
+            <div class="{{ message_type }}-message">
+                {{ message }}
+            </div>
+            {% endif %}
+
+            <div class="links">
+                <a href="{{ url_for('statistiques') }}" class="button-link">Voir les statistiques</a>
+            </div>
+        </div>
+    </div>
+</body>
+</html> 
