@@ -2,6 +2,7 @@ from flask import Flask, render_template, request
 import pandas as pd
 import os
 from openpyxl import load_workbook
+import errno
 
 app = Flask(__name__)
 
@@ -18,28 +19,35 @@ def sauvegarder_excel(nom, prenom, presence):
         
         # Si le fichier existe, lire et ajouter la nouvelle réponse
         if os.path.exists(fichier_excel):
-            df_existant = pd.read_excel(fichier_excel)
+            try:
+                df_existant = pd.read_excel(fichier_excel)
+            except PermissionError:
+                return False, "Le fichier Excel est actuellement ouvert. Veuillez le fermer et réessayer."
             df_final = pd.concat([df_existant, nouvelle_reponse], ignore_index=True)
         else:
             df_final = nouvelle_reponse
 
-        # Sauvegarder dans Excel
-        df_final.to_excel(fichier_excel, index=False)
+        try:
+            # Sauvegarder dans Excel
+            df_final.to_excel(fichier_excel, index=False)
 
-        # Calculer le total des "Oui" et le mettre dans la cellule D2
-        total_presents = len(df_final[df_final['Présence'] == 'Oui'])
-        
-        # Utiliser openpyxl pour modifier la cellule D2
-        wb = load_workbook(fichier_excel)
-        ws = wb.active
-        ws['D1'] = 'Total Participants'
-        ws['D2'] = total_presents
-        wb.save(fichier_excel)
-        
-        return True, total_presents
+            # Calculer le total des "Oui" et le mettre dans la cellule D2
+            total_presents = len(df_final[df_final['Présence'] == 'Oui'])
+            
+            # Utiliser openpyxl pour modifier la cellule D2
+            wb = load_workbook(fichier_excel)
+            ws = wb.active
+            ws['D1'] = 'Total Participants'
+            ws['D2'] = total_presents
+            wb.save(fichier_excel)
+            
+            return True, total_presents
+        except PermissionError:
+            return False, "Le fichier Excel est actuellement ouvert. Veuillez le fermer et réessayer."
+            
     except Exception as e:
         print(f"Erreur lors de la sauvegarde: {e}")
-        return False, 0
+        return False, "Une erreur est survenue lors de l'enregistrement."
 
 @app.route('/')
 def index():
@@ -56,14 +64,14 @@ def submit():
                              message="Veuillez remplir tous les champs", 
                              message_type="error")
 
-    succes, total = sauvegarder_excel(nom, prenom, presence)
+    succes, message = sauvegarder_excel(nom, prenom, presence)
     if succes:
         return render_template('index.html', 
-                             message=f"Votre réponse a été enregistrée.",
+                             message="Votre réponse a été enregistrée.",
                              message_type="success")
     else:
         return render_template('index.html', 
-                             message="Une erreur est survenue lors de l'enregistrement.", 
+                             message=message, 
                              message_type="error")
 
 if __name__ == '__main__':
