@@ -536,12 +536,6 @@
                 <div class="corner-decoration top-right"></div>
                 <div class="corner-decoration bottom-left"></div>
                 <h1>Confirmation de présence</h1>
-                {% if total_participants is not none %}
-                <div class="total-participants">
-                    <span class="count">{{ total_participants }}</span>
-                    <span class="label">participant{% if total_participants != 1 %}s{% endif %} confirmé{% if total_participants != 1 %}s{% endif %}</span>
-                </div>
-                {% endif %}
                 <form action="/submit" method="POST">
                     <div class="form-group">
                         <label for="nom">Nom</label>
