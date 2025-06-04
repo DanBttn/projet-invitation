@@ -1,18 +1,8 @@
-from flask import Flask, render_template, request, redirect, url_for
+from flask import Flask, render_template, request
 import pandas as pd
 import os
-from twilio.rest import Client
-from dotenv import load_dotenv
 
 app = Flask(__name__)
-load_dotenv()
-
-# Configuration Twilio
-TWILIO_ACCOUNT_SID = os.getenv('TWILIO_ACCOUNT_SID')
-TWILIO_AUTH_TOKEN = os.getenv('TWILIO_AUTH_TOKEN')
-TWILIO_PHONE_NUMBER = os.getenv('TWILIO_PHONE_NUMBER')
-
-client = Client(TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN)
 
 def sauvegarder_excel(nom, prenom, presence):
     fichier_excel = "reponses.xlsx"
@@ -37,18 +27,6 @@ def sauvegarder_excel(nom, prenom, presence):
         return True
     except Exception as e:
         print(f"Erreur lors de la sauvegarde: {e}")
-        return False
-
-def envoyer_sms(numero, nom, prenom):
-    try:
-        message = client.messages.create(
-            body=f"Bonjour! Merci de confirmer votre présence en cliquant sur ce lien: http://votre-site.com/rsvp",
-            from_=TWILIO_PHONE_NUMBER,
-            to=numero
-        )
-        return True
-    except Exception as e:
-        print(f"Erreur lors de l'envoi du SMS: {e}")
         return False
 
 @app.route('/')
