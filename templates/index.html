@@ -2,7 +2,7 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Mariage Elie & Noa</title>
     <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600&family=Montserrat:wght@300;400&display=swap" rel="stylesheet">
     <style>
@@ -24,6 +24,7 @@
             height: 100dvh; /* Pour les navigateurs mobiles modernes */
             background-color: var(--cream-color);
             -webkit-tap-highlight-color: transparent; /* Supprime le flash au tap sur mobile */
+            touch-action: none; /* Empêche le zoom par pincement */
         }
 
         .page-container {
@@ -33,6 +34,10 @@
             display: flex;
             transition: transform 0.5s ease-in-out;
             touch-action: pan-x; /* Optimisation pour le swipe horizontal */
+            overflow: hidden;
+            position: fixed;
+            top: 0;
+            left: 0;
         }
 
         .page {
@@ -48,13 +53,23 @@
             justify-content: center;
             align-items: center;
             position: relative;
+            padding: 1rem;
+            box-sizing: border-box;
+            overflow: hidden;
+            width: 100vw;
+            height: 100%;
         }
 
         .invitation-image {
-            width: 100%;
-            max-width: 550px;
+            width: auto;
             height: auto;
+            max-width: 95%;
+            max-height: 95vh;
+            object-fit: contain;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            pointer-events: none; /* Empêche les interactions avec l'image */
+            user-select: none;
+            -webkit-user-select: none;
         }
 
         .swipe-indicator {
@@ -327,6 +342,14 @@
             .number-control {
                 height: 35px !important;
             }
+
+            .invitation-page {
+                padding: 1rem;
+            }
+
+            .invitation-image {
+                max-height: calc(100vh - 2rem);
+            }
         }
 
         /* Styles pour mode paysage sur mobile */
@@ -342,6 +365,15 @@
 
             .form-group {
                 margin-bottom: 0.8rem;
+            }
+
+            .invitation-page {
+                padding: 1rem;
+            }
+
+            .invitation-image {
+                max-height: calc(100vh - 2rem);
+                max-width: 90%;
             }
         }
 
@@ -363,11 +395,11 @@
 
         /* Fix pour le 100vh sur mobile */
         @supports (-webkit-touch-callout: none) {
-    .page-container,
-    .page {
-        height: 100dvh;
-    }
-}
+            .page-container,
+            .page {
+                height: -webkit-fill-available;
+            }
+        }
 
         .total-participants {
             text-align: center;
@@ -491,7 +523,7 @@
     <div class="page-container">
         <!-- Page d'invitation -->
         <div class="page invitation-page">
-            <img src="{{ url_for('static', filename='CarteInvitation.jpg') }}" alt="Invitation au mariage" class="invitation-image">
+            <img src="{{ url_for('static', filename='carteInvitation.jpg') }}" alt="Invitation au mariage" class="invitation-image">
             <div class="swipe-indicator">
                 <span>Glissez pour répondre</span>
                 <div class="swipe-arrow"></div>
@@ -504,7 +536,12 @@
                 <div class="corner-decoration top-right"></div>
                 <div class="corner-decoration bottom-left"></div>
                 <h1>Confirmation de présence</h1>
-
+                {% if total_participants is not none %}
+                <div class="total-participants">
+                    <span class="count">{{ total_participants }}</span>
+                    <span class="label">participant{% if total_participants != 1 %}s{% endif %} confirmé{% if total_participants != 1 %}s{% endif %}</span>
+                </div>
+                {% endif %}
                 <form action="/submit" method="POST">
                     <div class="form-group">
                         <label for="nom">Nom</label>
