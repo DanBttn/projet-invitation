@@ -21,11 +21,11 @@ def get_total_participants():
 
 def sauvegarder_excel(nom, prenom, presence, nombre_personnes):
     fichier_excel = "reponses.xlsx"
-    
+
     try:
         # S'assurer que nombre_personnes est un entier
         nombre_personnes = int(nombre_personnes)
-        
+
         # Créer un nouveau DataFrame avec la réponse
         nouvelle_reponse = pd.DataFrame({
             'Nom': [nom],
@@ -33,9 +33,9 @@ def sauvegarder_excel(nom, prenom, presence, nombre_personnes):
             'Présence': [presence],
             'Nombre de personnes': [nombre_personnes if presence == 'Oui' else 0]
         })
-        
+
         print(f"Debug - Enregistrement: Nom={nom}, Prénom={prenom}, Présence={presence}, Nombre={nombre_personnes}")
-        
+
         # Si le fichier existe, lire et ajouter la nouvelle réponse
         if os.path.exists(fichier_excel):
             try:
@@ -53,18 +53,18 @@ def sauvegarder_excel(nom, prenom, presence, nombre_personnes):
             # Calculer le total des personnes présentes
             total_presents = df_final[df_final['Présence'] == 'Oui']['Nombre de personnes'].sum()
             print(f"Debug - Total après sauvegarde: {total_presents}")
-            
+
             # Utiliser openpyxl pour modifier la cellule D2
             wb = load_workbook(fichier_excel)
             ws = wb.active
             ws['D1'] = 'Total Participants'
             ws['D2'] = total_presents
             wb.save(fichier_excel)
-            
+
             return True, total_presents
         except PermissionError:
             return False, "Le fichier Excel est actuellement ouvert. Veuillez le fermer et réessayer."
-            
+
     except Exception as e:
         print(f"Erreur lors de la sauvegarde: {e}")
         return False, "Une erreur est survenue lors de l'enregistrement."
@@ -86,10 +86,10 @@ def submit():
     print(f"Debug - Données reçues: {request.form}")
 
     if not all([nom, prenom, presence]):
-        return render_template('index.html', 
-                             message="Veuillez remplir tous les champs", 
-                             message_type="error",
-                             total_participants=get_total_participants())
+        return render_template('index.html',
+                               message="Veuillez remplir tous les champs",
+                               message_type="error",
+                               total_participants=get_total_participants())
 
     try:
         nombre_personnes = int(nombre_personnes)
@@ -98,22 +98,22 @@ def submit():
     except ValueError as e:
         print(f"Debug - Erreur de validation: {e}")
         return render_template('index.html',
-                             message="Le nombre de personnes doit être un nombre valide",
-                             message_type="error",
-                             total_participants=get_total_participants())
+                               message="Le nombre de personnes doit être un nombre valide",
+                               message_type="error",
+                               total_participants=get_total_participants())
 
     succes, message = sauvegarder_excel(nom, prenom, presence, nombre_personnes)
     if succes:
-        return render_template('index.html', 
-                             message="Votre réponse a été enregistrée.",
-                             message_type="success",
-                             total_participants=message)
+        return render_template('index.html',
+                               message="Votre réponse a été enregistrée.",
+                               message_type="success",
+                               total_participants=message)
     else:
-        return render_template('index.html', 
-                             message=message, 
-                             message_type="error",
-                             total_participants=get_total_participants())
+        return render_template('index.html',
+                               message=message,
+                               message_type="error",
+                               total_participants=get_total_participants())
 
 
 if __name__ == '__main__':
-    app.run(debug=True) 
+    app.run(debug=True)

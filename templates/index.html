@@ -6,681 +6,536 @@
     <title>Mariage Elie & Noa</title>
     <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600&family=Montserrat:wght@300;400&display=swap" rel="stylesheet">
     <style>
-        /* Styles de base */
         :root {
-            --gold-color: #C5A572;
+            --gold: #C5A572;
             --light-gold: #E5D5B7;
-            --cream-color: #FAF7F2;
-            --container-padding: 2rem;
-            --border-radius: 10px;
+            --cream: #FAF7F2;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        html {
+            height: -webkit-fill-available;
         }
 
         body {
-            font-family: 'Montserrat', sans-serif;
             margin: 0;
-            padding: 0;
+            font-family: 'Montserrat', sans-serif;
+            background-color: var(--cream);
+            min-height: 100vh;
+            min-height: -webkit-fill-available;
+            height: 100dvh;
             overflow: hidden;
-            height: 100vh;
-            height: 100dvh; /* Pour les navigateurs mobiles modernes */
-            background-color: var(--cream-color);
-            -webkit-tap-highlight-color: transparent; /* Supprime le flash au tap sur mobile */
-            touch-action: none; /* Empêche le zoom par pincement */
+            position: fixed;
+            width: 100%;
         }
 
-        .page-container {
+        .pages {
+            display: flex;
             width: 200vw;
             height: 100vh;
             height: 100dvh;
-            display: flex;
+            min-height: -webkit-fill-available;
             transition: transform 0.5s ease-in-out;
-            touch-action: pan-x; /* Optimisation pour le swipe horizontal */
-            overflow: hidden;
-            position: fixed;
-            top: 0;
-            left: 0;
+            touch-action: pan-x;
         }
 
         .page {
             width: 100vw;
             height: 100vh;
+            height: 100dvh;
+            min-height: -webkit-fill-available;
             flex-shrink: 0;
         }
 
-        /* Page d'invitation */
-        .invitation-page {
-            background-color: white;
+        .invitation {
+            background: white;
             display: flex;
-            justify-content: center;
             align-items: center;
+            justify-content: center;
             position: relative;
             padding: 1rem;
-            box-sizing: border-box;
-            overflow: hidden;
-            width: 100vw;
-            height: 100%;
         }
 
-        .invitation-image {
+        .invitation img {
             width: auto;
             height: auto;
-            max-width: 95%;
-            max-height: 95vh;
+            max-width: min(90%, 550px);
+            max-height: 85vh;
             object-fit: contain;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-            pointer-events: none; /* Empêche les interactions avec l'image */
-            user-select: none;
-            -webkit-user-select: none;
         }
 
-        .swipe-indicator {
+        .swipe {
             position: absolute;
-            bottom: 20px;
+            bottom: 30px;
             left: 50%;
             transform: translateX(-50%);
-            color: var(--gold-color);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
+            color: var(--gold);
+            text-align: center;
             animation: bounce 2s infinite;
+            background: rgba(255, 255, 255, 0.95);
+            padding: 12px 20px;
+            border-radius: 25px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            white-space: nowrap;
+            font-size: 0.95rem;
         }
 
-        .swipe-indicator span {
-            font-size: 0.9rem;
-            margin-bottom: 8px;
-        }
-
-        .swipe-arrow {
-            width: 30px;
-            height: 30px;
-            border-right: 3px solid var(--gold-color);
-            border-bottom: 3px solid var(--gold-color);
+        .swipe::after {
+            content: '';
+            display: block;
+            width: 20px;
+            height: 20px;
+            margin: 8px auto 0;
+            border-right: 2px solid var(--gold);
+            border-bottom: 2px solid var(--gold);
             transform: rotate(-45deg);
         }
 
         @keyframes bounce {
-            0%, 20%, 50%, 80%, 100% {
-                transform: translateX(-50%) translateY(0);
-            }
-            40% {
-                transform: translateX(-50%) translateY(-10px);
-            }
-            60% {
-                transform: translateX(-50%) translateY(-5px);
-            }
+            0%, 100% { transform: translateX(-50%) translateY(0); }
+            50% { transform: translateX(-50%) translateY(-10px); }
         }
 
-        /* Page formulaire */
         .form-page {
-            background-color: var(--cream-color);
-            overflow-y: auto;
+            background: var(--cream);
             display: flex;
             justify-content: center;
             align-items: center;
-            padding: 2rem;
+            padding: 1rem;
+            height: 100%;
+            box-sizing: border-box;
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
         }
 
-        .container {
+        .form-container {
+            background: white;
+            padding: 2rem;
+            border-radius: 10px;
             width: 100%;
             max-width: 600px;
-            padding: 2rem;
-            background-color: white;
-            border-radius: 10px;
-            box-shadow: 0 0 20px rgba(197, 165, 114, 0.1);
-            position: relative;
-            overflow: hidden;
             border: 1px solid var(--light-gold);
-        }
-
-        .container::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 5px;
-            background: linear-gradient(to right, var(--gold-color), var(--light-gold));
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.05);
+            margin: 1rem;
         }
 
         h1 {
             font-family: 'Cormorant Garamond', serif;
-            color: var(--gold-color);
+            color: var(--gold);
+            font-size: 2rem;
             text-align: center;
-            font-size: 2.5rem;
             margin-bottom: 2rem;
-            font-weight: 600;
-        }
-
-        .form-group {
-            margin-bottom: 1.5rem;
         }
 
         label {
             display: block;
             margin-bottom: 0.5rem;
+            font-size: 0.95rem;
             color: #666;
-            font-size: 0.9rem;
         }
 
-        input[type="text"], input[type="number"], select {
+        input, select {
             width: 100%;
-            padding: 0.8rem;
+            padding: 12px;
+            border-radius: 5px;
+            font-size: 16px;
+            font-family: inherit;
+            margin-bottom: 1.2rem;
             border: 1px solid var(--light-gold);
-            border-radius: 4px;
-            font-size: 1rem;
-            transition: border-color 0.3s ease;
+            background-color: white;
+            height: 50px;
         }
 
-        input[type="text"]:focus, input[type="number"]:focus, select:focus {
+        input:focus, select:focus {
             outline: none;
-            border-color: var(--gold-color);
+            border-color: var(--gold);
         }
 
-        /* Supprime les flèches du champ number */
+        select {
+            appearance: none;
+            background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23C5A572' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+            background-repeat: no-repeat;
+            background-position: right 12px center;
+            background-size: 16px;
+            padding-right: 40px;
+        }
+
+        input[type="number"] {
+            appearance: none;
+        }
+
         input[type="number"]::-webkit-inner-spin-button,
         input[type="number"]::-webkit-outer-spin-button {
-            -webkit-appearance: none;
+            appearance: none;
             margin: 0;
-        }
-        input[type="number"] {
-            -moz-appearance: textfield;
         }
 
         button {
-            background: linear-gradient(to right, var(--gold-color), var(--light-gold));
-            color: white;
-            border: none;
-            padding: 1rem 2rem;
-            font-size: 1rem;
-            border-radius: 4px;
-            cursor: pointer;
             width: 100%;
+            padding: 14px;
+            border-radius: 5px;
+            font-size: 16px;
+            font-family: inherit;
+            background: linear-gradient(to right, var(--gold), var(--light-gold));
+            border: none;
+            color: white;
+            cursor: pointer;
+            height: 50px;
+            margin-top: 1rem;
             transition: transform 0.2s ease;
-            font-family: 'Montserrat', sans-serif;
         }
 
         button:hover {
             transform: translateY(-2px);
         }
 
-        .message {
-            margin-top: 1rem;
-            padding: 1rem;
-            border-radius: 4px;
-            text-align: center;
-        }
-
-        .message.success {
-            background-color: #e8f5e9;
-            color: #2e7d32;
-            border: 1px solid #a5d6a7;
-        }
-
-        .message.error {
-            background-color: #fbe9e7;
-            color: #c62828;
-            border: 1px solid #ffcdd2;
-        }
-
-        .corner-decoration {
-            position: absolute;
-            width: 100px;
-            height: 100px;
-            opacity: 0.2;
-            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" fill="%23C5A572"><path d="M95,5c-5,25-25,45-50,50c25,5,45,25,50,50c5-25,25-45,50-50C120,50,100,30,95,5z"/></svg>');
-            background-repeat: no-repeat;
-            background-size: contain;
-        }
-
-        .top-right {
-            top: -20px;
-            right: -20px;
-            transform: rotate(45deg);
-        }
-
-        .bottom-left {
-            bottom: -20px;
-            left: -20px;
-            transform: rotate(-135deg);
+        button:active {
+            transform: translateY(0);
         }
 
         @media (max-width: 768px) {
-            :root {
-                --container-padding: 1rem;
+            .form-container {
+                padding: 1.5rem;
+                margin: 0.5rem;
             }
 
-            .container {
-                margin: 1rem;
-                padding: var(--container-padding);
-                max-width: 100% !important;
-                box-sizing: border-box;
-            }
-
-            .form-group {
-                margin-bottom: 1.2rem;
-            }
-
-            input[type="text"],
-            input[type="number"],
-            select {
-                font-size: 16px !important; /* Empêche le zoom sur iOS */
-                padding: 0.8rem !important;
-                -webkit-appearance: none; /* Style natif sur iOS */
-                appearance: none;
-            }
-
-            select {
-                background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="12" height="6"><path d="M0 0l6 6 6-6z" fill="%23666"/></svg>');
-                background-repeat: no-repeat;
-                background-position: right 1rem center;
-                padding-right: 2.5rem !important;
-            }
-
-            .number-input-container {
-                display: grid;
-                grid-template-columns: auto 80px;
-                gap: 0.5rem;
-                align-items: center;
-            }
-
-            .number-controls {
-                display: grid;
-                grid-template-columns: 1fr 1fr;
-                gap: 0.25rem;
-            }
-
-            .number-control {
-                width: 100% !important;
-                height: 40px !important;
-                font-size: 1.5rem !important;
-                touch-action: manipulation; /* Meilleure réponse tactile */
+            .invitation img {
+                max-width: 95%;
+                max-height: 80vh;
             }
 
             h1 {
-                font-size: 1.8rem !important;
-                margin-bottom: 1.5rem !important;
+                font-size: 1.6rem;
+                margin-bottom: 1.5rem;
             }
 
-            button[type="submit"] {
-                padding: 1rem !important;
-                font-size: 1.1rem !important;
-                margin-top: 1rem;
-                height: 50px; /* Hauteur fixe pour meilleure zone de tap */
-            }
-
-            .total-participants {
-                margin: 1rem 0;
-                padding: 0.8rem;
-            }
-
-            .total-participants .count {
-                font-size: 2rem !important;
-            }
-
-            .swipe-indicator {
-                bottom: 40px; /* Plus haut sur mobile */
-            }
-
-            .swipe-indicator span {
-                font-size: 1rem;
-                background-color: rgba(255, 255, 255, 0.9);
-                padding: 0.5rem 1rem;
-                border-radius: 20px;
-                box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            .swipe {
+                bottom: 20px;
+                font-size: 0.9rem;
+                padding: 10px 16px;
             }
         }
 
-        /* Styles pour très petits écrans */
-        @media (max-width: 360px) {
-            :root {
-                --container-padding: 0.8rem;
-            }
-
-            h1 {
-                font-size: 1.5rem !important;
-            }
-
-            .number-control {
-                height: 35px !important;
-            }
-
-            .invitation-page {
+        @media (max-height: 600px) {
+            .form-container {
+                margin: 0.5rem;
                 padding: 1rem;
             }
 
-            .invitation-image {
-                max-height: calc(100vh - 2rem);
-            }
-        }
-
-        /* Styles pour mode paysage sur mobile */
-        @media (max-height: 600px) and (orientation: landscape) {
-            .form-page {
-                align-items: flex-start;
-                padding-top: 1rem;
+            .invitation img {
+                max-height: 75vh;
             }
 
-            .container {
-                margin-top: 0;
+            h1 {
+                font-size: 1.4rem;
+                margin-bottom: 1rem;
             }
 
-            .form-group {
+            input, select, button {
+                height: 45px;
                 margin-bottom: 0.8rem;
             }
-
-            .invitation-page {
-                padding: 1rem;
-            }
-
-            .invitation-image {
-                max-height: calc(100vh - 2rem);
-                max-width: 90%;
-            }
         }
 
-        /* Styles pour éviter les problèmes de débordement */
-        .form-page {
-            overflow-y: auto;
-            -webkit-overflow-scrolling: touch; /* Défilement fluide sur iOS */
-        }
-
-        /* Optimisations tactiles */
-        button,
-        input[type="submit"],
-        .number-control {
-            cursor: pointer;
-            user-select: none;
-            -webkit-user-select: none;
-            -webkit-touch-callout: none;
-        }
-
-        /* Fix pour le 100vh sur mobile */
-        @supports (-webkit-touch-callout: none) {
-            .page-container,
-            .page {
-                height: auto;
-            }
-        }
-
-        .total-participants {
-            text-align: center;
-            margin-bottom: 2rem;
-            padding: 1rem;
-            background: linear-gradient(to right, rgba(197, 165, 114, 0.1), rgba(229, 213, 183, 0.1));
-            border-radius: 8px;
-            border: 1px solid var(--light-gold);
-        }
-
-        .total-participants .count {
-            display: block;
-            font-size: 2.5rem;
-            font-family: 'Cormorant Garamond', serif;
-            color: var(--gold-color);
-            font-weight: 600;
-            line-height: 1;
-            margin-bottom: 0.5rem;
-        }
-
-        .total-participants .label {
-            font-size: 0.9rem;
-            color: #666;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-
-        .accompagnant-field {
-            margin-bottom: 0.8rem;
-        }
-
-        .accompagnant-input {
-            width: 100%;
-            padding: 0.8rem;
-            border: 1px solid var(--light-gold);
-            border-radius: 4px;
-            font-size: 1rem;
-            transition: border-color 0.3s ease;
-        }
-
-        .accompagnant-input:focus {
-            outline: none;
-            border-color: var(--gold-color);
-        }
-
-        #presenceDetails {
-            background: rgba(197, 165, 114, 0.05);
-            padding: 1.5rem;
-            border-radius: 8px;
-            margin-bottom: 1.5rem;
-        }
-
-        #accompagnantsSection {
-            margin-top: 1rem;
-            padding-top: 1rem;
-            border-top: 1px solid var(--light-gold);
-        }
-
-        .number-input-container {
+        /* Number selector styles */
+        .number-selector {
             display: flex;
-            align-items: center;
-            gap: 1rem;
-        }
-
-        input[type="number"] {
-            width: 100%;
-            padding: 0.8rem;
+            align-items: stretch;
+            margin-bottom: 1.2rem;
             border: 1px solid var(--light-gold);
-            border-radius: 4px;
-            font-size: 1.2rem;
-            transition: border-color 0.3s ease;
-            -moz-appearance: textfield;
-            text-align: center;
-            font-family: 'Cormorant Garamond', serif;
-            color: var(--gold-color);
+            border-radius: 5px;
+            overflow: hidden;
+            height: 50px;
         }
 
-        input[type="number"]::-webkit-inner-spin-button,
-        input[type="number"]::-webkit-outer-spin-button {
-            -webkit-appearance: none;
+        .number-selector button {
+            width: 50px;
             margin: 0;
-        }
-
-        input[type="number"]:focus {
-            outline: none;
-            border-color: var(--gold-color);
-        }
-
-        .number-controls {
-            display: flex;
-            flex-direction: column;
-            gap: 0.25rem;
-        }
-
-        .number-control {
-            width: 30px;
-            height: 30px;
-            padding: 0;
+            background: var(--light-gold);
+            border: none;
+            color: white;
+            font-size: 1.5rem;
             display: flex;
             align-items: center;
             justify-content: center;
-            background: linear-gradient(to right, var(--gold-color), var(--light-gold));
+            padding: 0;
+            transition: background-color 0.2s ease;
+        }
+
+        .number-selector button:hover {
+            background: var(--gold);
+            transform: none;
+        }
+
+        .number-selector input {
+            width: 100%;
+            text-align: center;
+            margin: 0;
             border: none;
-            border-radius: 4px;
-            color: white;
             font-size: 1.2rem;
+            color: #666;
+            padding: 0;
+            border-radius: 0;
+        }
+
+        .number-selector input:focus {
+            outline: none;
+            border: none;
+        }
+
+        @media (max-height: 600px) {
+            .number-selector,
+            .number-selector button {
+                height: 45px;
+            }
+        }
+
+        /* Styles for confirmation message */
+        .confirmation-popup {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+            z-index: 1000;
+            text-align: center;
+            border: 1px solid var(--light-gold);
+            max-width: 90%;
+            width: 400px;
+            display: none;
+            animation: fadeIn 0.3s ease-out;
+        }
+
+        .confirmation-popup h2 {
+            color: var(--gold);
+            font-family: 'Cormorant Garamond', serif;
+            margin-bottom: 1rem;
+        }
+
+        .confirmation-popup p {
+            color: #666;
+            margin-bottom: 1.5rem;
+        }
+
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 999;
+            display: none;
+            animation: fadeIn 0.3s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .close-button {
+            background: linear-gradient(to right, var(--gold), var(--light-gold));
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
             cursor: pointer;
-            transition: transform 0.2s ease;
-        }
-
-        .number-control:hover {
-            transform: scale(1.1);
-        }
-
-        .number-control:active {
-            transform: scale(0.95);
+            font-size: 16px;
+            margin-top: 1rem;
+            width: auto;
+            display: inline-block;
         }
     </style>
 </head>
 <body>
-    <div class="page-container">
-        <!-- Page d'invitation -->
-        <div class="page invitation-page">
-            <img src="{{ url_for('static', filename='carteInvitation.jpg') }}" alt="Invitation au mariage" class="invitation-image">
-            <div class="swipe-indicator">
-                <span>Glissez pour répondre</span>
-                <div class="swipe-arrow"></div>
-            </div>
+    <!-- Add overlay and confirmation popup -->
+    <div class="overlay" id="overlay"></div>
+    <div class="confirmation-popup" id="confirmationPopup">
+        <h2>Merci pour votre réponse</h2>
+        <p>Votre confirmation a bien été enregistrée.</p>
+        <button class="close-button" onclick="closeConfirmation()">Fermer</button>
+    </div>
+
+    <div class="pages" id="pages">
+        <!-- Invitation -->
+        <div class="page invitation">
+            <img src="{{ url_for('static', filename='CarteInvitation.jpg') }}" alt="Invitation Mariage">
+            <div class="swipe">Glissez pour répondre</div>
         </div>
 
-        <!-- Page formulaire -->
+        <!-- Formulaire -->
         <div class="page form-page">
-            <div class="container">
-                <div class="corner-decoration top-right"></div>
-                <div class="corner-decoration bottom-left"></div>
+            <form class="form-container" action="/submit" method="POST">
                 <h1>Confirmation de présence</h1>
-                <form action="/submit" method="POST">
-                    <div class="form-group">
-                        <label for="nom">Nom</label>
-                        <input type="text" id="nom" name="nom" required>
+
+                <label for="nom">Nom</label>
+                <input type="text" id="nom" name="nom" required>
+
+                <label for="prenom">Prénom</label>
+                <input type="text" id="prenom" name="prenom" required>
+
+                <label for="presence">Serez-vous présent(e) ?</label>
+                <select id="presence" name="presence" required>
+                    <option value="">-- Veuillez choisir --</option>
+                    <option value="Oui">Oui, je serai présent(e)</option>
+                    <option value="Non">Non, je ne pourrai pas venir</option>
+                </select>
+
+                <div id="nombreBlock" style="display:none;">
+                    <label for="nombre_personnes">Nombre de personnes (vous inclus)</label>
+                    <div class="number-selector">
+                        <button type="button" onclick="decrementGuests()">-</button>
+                        <input type="number" id="nombre_personnes" name="nombre_personnes" min="1" value="1" readonly>
+                        <button type="button" onclick="incrementGuests()">+</button>
                     </div>
-                    <div class="form-group">
-                        <label for="prenom">Prénom</label>
-                        <input type="text" id="prenom" name="prenom" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="presence">Serez-vous présent(e) ?</label>
-                        <select id="presence" name="presence" required>
-                            <option value="">Veuillez choisir...</option>
-                            <option value="Oui">Oui, je serai présent(e)</option>
-                            <option value="Non">Non, je ne pourrai pas être présent(e)</option>
-                        </select>
-                    </div>
-                    <div class="form-group" id="nombrePersonnesGroup" style="display: none;">
-                        <label for="nombre_personnes">Nombre total de personnes (vous inclus)</label>
-                        <div class="number-input-container">
-                            <input type="number"
-                                   id="nombre_personnes"
-                                   name="nombre_personnes"
-                                   min="1"
-                                   value="1"
-                                   onchange="validateNumber(this)"
-                                   required>
-                            <div class="number-controls">
-                                <button type="button" class="number-control" onclick="changeNumber(1)">+</button>
-                                <button type="button" class="number-control" onclick="changeNumber(-1)">−</button>
-                            </div>
-                        </div>
-                    </div>
-                    <button type="submit">Confirmer ma réponse</button>
-                </form>
-                {% if message %}
-                <div class="message {{ message_type }}">
-                    {{ message }}
                 </div>
-                {% endif %}
-            </div>
+
+                <button type="submit">Confirmer ma réponse</button>
+            </form>
         </div>
     </div>
 
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const presenceSelect = document.getElementById('presence');
-            const nombrePersonnesGroup = document.getElementById('nombrePersonnesGroup');
-            const nombrePersonnesInput = document.getElementById('nombre_personnes');
+        const presence = document.getElementById('presence');
+        const nombreBlock = document.getElementById('nombreBlock');
+        const nombreInput = document.getElementById('nombre_personnes');
+        const pages = document.getElementById('pages');
+        let startX = null;
+        let isSecondSlide = false;
 
-            // Afficher/masquer le champ nombre de personnes
-            presenceSelect.addEventListener('change', function() {
-                if (this.value === 'Oui') {
-                    nombrePersonnesGroup.style.display = 'block';
-                    nombrePersonnesInput.required = true;
-                } else {
-                    nombrePersonnesGroup.style.display = 'none';
-                    nombrePersonnesInput.required = false;
-                    nombrePersonnesInput.value = '0';
-                }
-            });
-
-            // Ajouter la validation au formulaire
-            document.querySelector('form').addEventListener('submit', function(e) {
-                if (presenceSelect.value === 'Oui') {
-                    const nombrePersonnes = parseInt(nombrePersonnesInput.value);
-                    if (isNaN(nombrePersonnes) || nombrePersonnes < 1) {
-                        e.preventDefault();
-                        alert('Veuillez entrer un nombre valide de personnes (minimum 1)');
-                    }
-                }
-            });
-
-            // Gestion du swipe
-            const pageContainer = document.querySelector('.page-container');
-            let startX = 0;
-            let currentX = 0;
-            let isDragging = false;
-
-            // Fonctions utilitaires pour le swipe
-            function handleSwipeStart(x) {
-                startX = x;
-                isDragging = true;
+        presence.addEventListener('change', () => {
+            nombreBlock.style.display = presence.value === 'Oui' ? 'block' : 'none';
+            if (presence.value !== 'Oui') {
+                nombreInput.value = '0';
+            } else {
+                nombreInput.value = '1';
             }
-
-            function handleSwipeMove(x) {
-                if (!isDragging) return;
-
-                currentX = x;
-                const diff = startX - currentX;
-
-                // Limiter le swipe à gauche uniquement (vers le formulaire)
-                if (diff > 50) {
-                    pageContainer.style.transform = 'translateX(-100vw)';
-                } else if (diff < -50 && diff > -100) {
-                    pageContainer.style.transform = 'translateX(0)';
-                }
-            }
-
-            function handleSwipeEnd() {
-                isDragging = false;
-                startX = null;
-            }
-
-            // Gestion tactile
-            pageContainer.addEventListener('touchstart', (e) => {
-                handleSwipeStart(e.touches[0].clientX);
-            });
-
-            pageContainer.addEventListener('touchmove', (e) => {
-                handleSwipeMove(e.touches[0].clientX);
-            });
-
-            pageContainer.addEventListener('touchend', handleSwipeEnd);
-
-            // Gestion souris
-            pageContainer.addEventListener('mousedown', (e) => {
-                handleSwipeStart(e.clientX);
-            });
-
-            pageContainer.addEventListener('mousemove', (e) => {
-                handleSwipeMove(e.clientX);
-            });
-
-            pageContainer.addEventListener('mouseup', handleSwipeEnd);
-            pageContainer.addEventListener('mouseleave', handleSwipeEnd);
         });
 
-        // Fonction pour changer le nombre avec les boutons + et -
-        function changeNumber(delta) {
+        const handleTouchStart = e => {
+            startX = e.touches[0].clientX;
+        };
+
+        const handleTouchMove = e => {
+            if (!startX) return;
+            const diff = startX - e.touches[0].clientX;
+
+            if (!isSecondSlide && diff > 50) {
+                pages.style.transform = 'translateX(-100vw)';
+                isSecondSlide = true;
+            }
+
+            if (isSecondSlide && diff < -50) {
+                e.preventDefault();
+            }
+        };
+
+        const handleTouchEnd = () => {
+            startX = null;
+        };
+
+        pages.addEventListener('touchstart', handleTouchStart, { passive: true });
+        pages.addEventListener('touchmove', handleTouchMove, { passive: false });
+        pages.addEventListener('touchend', handleTouchEnd, { passive: true });
+
+        // Gestion de la souris (pour desktop)
+        let isMouseDown = false;
+
+        pages.addEventListener('mousedown', e => {
+            isMouseDown = true;
+            startX = e.clientX;
+        });
+
+        pages.addEventListener('mousemove', e => {
+            if (!isMouseDown || !startX) return;
+            const diff = startX - e.clientX;
+
+            if (!isSecondSlide && diff > 50) {
+                pages.style.transform = 'translateX(-100vw)';
+                isSecondSlide = true;
+            }
+        });
+
+        pages.addEventListener('mouseup', () => {
+            isMouseDown = false;
+            startX = null;
+        });
+
+        pages.addEventListener('mouseleave', () => {
+            isMouseDown = false;
+            startX = null;
+        });
+
+        // Empêcher le zoom sur mobile
+        document.addEventListener('gesturestart', e => {
+            e.preventDefault();
+        });
+
+        // Guest number control
+        function decrementGuests() {
             const input = document.getElementById('nombre_personnes');
-            const currentValue = parseInt(input.value) || 1;
-            const newValue = Math.max(1, currentValue + delta);
-            input.value = newValue;
-            // Déclencher l'événement change pour activer la validation
-            input.dispatchEvent(new Event('change'));
+            if (input.value > 1) {
+                input.value = parseInt(input.value) - 1;
+            }
         }
 
-        // Fonction pour valider le nombre
-        function validateNumber(input) {
-            const value = parseInt(input.value);
-            if (isNaN(value) || value < 1) {
-                input.value = 1;
+        function incrementGuests() {
+            const input = document.getElementById('nombre_personnes');
+            if (input.value < 10) {
+                input.value = parseInt(input.value) + 1;
             }
+        }
+
+        // Show/hide guests section based on attendance
+        document.getElementById('presence').addEventListener('change', function() {
+            const guestsSection = document.getElementById('nombreBlock');
+            guestsSection.style.display = this.value === 'Oui' ? 'block' : 'none';
+        });
+
+        // Form submission and confirmation handling
+        document.querySelector('form').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            try {
+                const formData = new FormData(this);
+                const response = await fetch('/submit', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                if (response.ok) {
+                    // Show confirmation message
+                    document.getElementById('overlay').style.display = 'block';
+                    document.getElementById('confirmationPopup').style.display = 'block';
+                    // Reset form
+                    this.reset();
+                    nombreBlock.style.display = 'none';
+                } else {
+                    alert('Une erreur est survenue. Veuillez réessayer.');
+                }
+            } catch (error) {
+                alert('Une erreur est survenue. Veuillez réessayer.');
+            }
+        });
+
+        function closeConfirmation() {
+            document.getElementById('overlay').style.display = 'none';
+            document.getElementById('confirmationPopup').style.display = 'none';
+            // Return to first slide
+            pages.style.transform = 'translateX(0)';
+            isSecondSlide = false;
         }
     </script>
 </body>
-</html>
+</html> 
