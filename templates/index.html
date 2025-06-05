@@ -19,16 +19,12 @@
             -webkit-tap-highlight-color: transparent;
         }
 
-        html {
-            height: -webkit-fill-available;
-        }
 
         body {
             margin: 0;
             font-family: 'Montserrat', sans-serif;
             background-color: var(--cream);
             min-height: 100vh;
-            min-height: -webkit-fill-available;
             height: 100dvh;
             overflow: hidden;
             position: fixed;
@@ -40,7 +36,6 @@
             width: 200vw;
             height: 100vh;
             height: 100dvh;
-            min-height: -webkit-fill-available;
             transition: transform 0.5s ease-in-out;
             touch-action: pan-x;
         }
@@ -49,7 +44,6 @@
             width: 100vw;
             height: 100vh;
             height: 100dvh;
-            min-height: -webkit-fill-available;
             flex-shrink: 0;
         }
 
@@ -87,16 +81,18 @@
             font-size: 0.95rem;
         }
 
-        .swipe::after {
-            content: '';
-            display: block;
-            width: 20px;
-            height: 20px;
-            margin: 8px auto 0;
-            border-right: 2px solid var(--gold);
-            border-bottom: 2px solid var(--gold);
-            transform: rotate(-45deg);
-        }
+.swipe::after {
+    content: '';
+    display: block;
+    width: 20px;
+    height: 20px;
+    margin: 8px auto 0;
+    border-left: 2px solid var(--gold);
+    border-bottom: 2px solid var(--gold);
+    transform: rotate(45deg);
+}
+
+
 
         @keyframes bounce {
             0%, 100% { transform: translateX(-50%) translateY(0); }
@@ -356,6 +352,32 @@
             width: auto;
             display: inline-block;
         }
+
+        .swipe-back {
+            color: var(--gold);
+            text-align: center;
+            background: rgba(255, 255, 255, 0.95);
+            padding: 12px 20px;
+            border-radius: 25px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            white-space: nowrap;
+            font-size: 0.95rem;
+            margin-top: 2rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .swipe-back::before {
+            content: '';
+            display: block;
+            width: 20px;
+            height: 20px;
+            margin: 8px auto 0;
+            border-right: 2px solid var(--gold);
+            border-bottom: 2px solid var(--gold);
+            transform: rotate(-45deg);
+        }
     </style>
 </head>
 <body>
@@ -370,9 +392,9 @@
     <div class="pages" id="pages">
         <!-- Invitation -->
         <div class="page invitation">
-            <img src="{{ url_for('static', filename='CarteInvitation.jpg') }}" alt="Invitation Mariage">
-            <div class="swipe">Glissez pour répondre</div>
-        </div>
+            <img src="{{ url_for('static', filename='carteInvitation.jpg') }}" alt="Invitation Mariage">
+<div class="swipe">Glissez vers la gauche pour répondre</div>
+            </div>
 
         <!-- Formulaire -->
         <div class="page form-page">
@@ -384,6 +406,9 @@
 
                 <label for="prenom">Prénom</label>
                 <input type="text" id="prenom" name="prenom" required>
+
+                <label for="telephone">Numéro de téléphone</label>
+                <input type="tel" id="telephone" name="telephone" pattern="[0-9]{10}" placeholder="0612345678" required>
 
                 <label for="presence">Serez-vous présent(e) ?</label>
                 <select id="presence" name="presence" required>
@@ -402,6 +427,9 @@
                 </div>
 
                 <button type="submit">Confirmer ma réponse</button>
+                <div style="text-align: center;">
+                    <div class="swipe-back">Glissez vers la droite pour retourner à l'invitation</div>
+                </div>
             </form>
         </div>
     </div>
@@ -426,20 +454,20 @@
         const handleTouchStart = e => {
             startX = e.touches[0].clientX;
         };
-
         const handleTouchMove = e => {
-            if (!startX) return;
-            const diff = startX - e.touches[0].clientX;
+    if (!startX) return;
+    const diff = startX - e.touches[0].clientX;
 
-            if (!isSecondSlide && diff > 50) {
-                pages.style.transform = 'translateX(-100vw)';
-                isSecondSlide = true;
-            }
+    if (!isSecondSlide && diff > 50) {
+        pages.style.transform = 'translateX(-100vw)';
+        isSecondSlide = true;
+    } else if (isSecondSlide && diff < -50) {
+        pages.style.transform = 'translateX(0)';
+        isSecondSlide = false;
+    }
+};
 
-            if (isSecondSlide && diff < -50) {
-                e.preventDefault();
-            }
-        };
+
 
         const handleTouchEnd = () => {
             startX = null;
@@ -457,15 +485,19 @@
             startX = e.clientX;
         });
 
-        pages.addEventListener('mousemove', e => {
-            if (!isMouseDown || !startX) return;
-            const diff = startX - e.clientX;
+     pages.addEventListener('mousemove', e => {
+    if (!isMouseDown || !startX) return;
+    const diff = startX - e.clientX;
 
-            if (!isSecondSlide && diff > 50) {
-                pages.style.transform = 'translateX(-100vw)';
-                isSecondSlide = true;
-            }
-        });
+    if (!isSecondSlide && diff > 50) {
+        pages.style.transform = 'translateX(-100vw)';
+        isSecondSlide = true;
+    } else if (isSecondSlide && diff < -50) {
+        pages.style.transform = 'translateX(0)';
+        isSecondSlide = false;
+    }
+});
+
 
         pages.addEventListener('mouseup', () => {
             isMouseDown = false;
@@ -506,7 +538,7 @@
         // Form submission and confirmation handling
         document.querySelector('form').addEventListener('submit', async function(e) {
             e.preventDefault();
-            
+
             try {
                 const formData = new FormData(this);
                 const response = await fetch('/submit', {
@@ -538,4 +570,4 @@
         }
     </script>
 </body>
-</html> 
+</html>

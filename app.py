@@ -8,7 +8,7 @@ app = Flask(__name__)
 
 
 def get_total_participants():
-    fichier_excel = "reponses.xlsx"
+    fichier_excel = "reponse.xlsx"
     try:
         if os.path.exists(fichier_excel):
             df = pd.read_excel(fichier_excel)
@@ -19,8 +19,8 @@ def get_total_participants():
         return 0
 
 
-def sauvegarder_excel(nom, prenom, presence, nombre_personnes):
-    fichier_excel = "reponses.xlsx"
+def sauvegarder_excel(nom, prenom, telephone, presence, nombre_personnes):
+    fichier_excel = "reponse.xlsx"
 
     try:
         # S'assurer que nombre_personnes est un entier
@@ -30,11 +30,12 @@ def sauvegarder_excel(nom, prenom, presence, nombre_personnes):
         nouvelle_reponse = pd.DataFrame({
             'Nom': [nom],
             'Prénom': [prenom],
+            'Téléphone': [telephone],
             'Présence': [presence],
             'Nombre de personnes': [nombre_personnes if presence == 'Oui' else 0]
         })
 
-        print(f"Debug - Enregistrement: Nom={nom}, Prénom={prenom}, Présence={presence}, Nombre={nombre_personnes}")
+        print(f"Debug - Enregistrement: Nom={nom}, Prénom={prenom}, Téléphone={telephone}, Présence={presence}, Nombre={nombre_personnes}")
 
         # Si le fichier existe, lire et ajouter la nouvelle réponse
         if os.path.exists(fichier_excel):
@@ -80,14 +81,22 @@ def index():
 def submit():
     nom = request.form.get('nom')
     prenom = request.form.get('prenom')
+    telephone = request.form.get('telephone')
     presence = request.form.get('presence')
     nombre_personnes = request.form.get('nombre_personnes', '0')
 
     print(f"Debug - Données reçues: {request.form}")
 
-    if not all([nom, prenom, presence]):
+    if not all([nom, prenom, telephone, presence]):
         return render_template('index.html',
                                message="Veuillez remplir tous les champs",
+                               message_type="error",
+                               total_participants=get_total_participants())
+
+    # Validation du numéro de téléphone (10 chiffres)
+    if not telephone.isdigit() or len(telephone) != 10:
+        return render_template('index.html',
+                               message="Le numéro de téléphone doit contenir 10 chiffres",
                                message_type="error",
                                total_participants=get_total_participants())
 
@@ -102,7 +111,7 @@ def submit():
                                message_type="error",
                                total_participants=get_total_participants())
 
-    succes, message = sauvegarder_excel(nom, prenom, presence, nombre_personnes)
+    succes, message = sauvegarder_excel(nom, prenom, telephone, presence, nombre_personnes)
     if succes:
         return render_template('index.html',
                                message="Votre réponse a été enregistrée.",
