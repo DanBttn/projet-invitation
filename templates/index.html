@@ -77,7 +77,7 @@
 
         .pages {
             display: flex;
-            width: 200vw;
+            width: 300vw;
             height: 100dvh;
             transition: transform 0.5s ease-in-out;
             touch-action: pan-x;
@@ -420,6 +420,156 @@
             border-bottom: 2px solid var(--gold);
             transform: rotate(-45deg);
         }
+
+        /* Ajout des styles pour l'enveloppe */
+        .envelope-page {
+            width: 100vw;
+            height: 100dvh;
+            flex-shrink: 0;
+            background: var(--cream);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        .envelope {
+            width: 500px;
+            height: 300px;
+            position: relative;
+            cursor: pointer;
+            transform-style: preserve-3d;
+            transition: transform 1s;
+            background: #C5B190;
+            perspective: 1000px;
+            transform: scaleX(-1);
+        }
+
+        .envelope-front {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: #C5B190;
+            border-radius: 5px;
+            transform-origin: bottom;
+            transition: transform 0.6s ease-in-out;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            backface-visibility: hidden;
+        }
+
+        .envelope-back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: #C5B190;
+            border-radius: 5px;
+            backface-visibility: hidden;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-family: 'Cormorant Garamond', serif;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .envelope-flap {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: #C5B190;
+            clip-path: polygon(0 0, 50% 50%, 100% 0);
+            transform-origin: top;
+            transition: transform 0.6s ease-in-out;
+            z-index: 2;
+        }
+
+        .envelope.opened .envelope-flap {
+            transform: rotateX(180deg);
+        }
+
+        .envelope.opened .envelope-front {
+            transform: rotateX(180deg);
+            transition-delay: 0.2s;
+        }
+
+        .names p, .subtitle {
+            transform: scaleX(-1);
+        }
+
+        .envelope-front .names,
+        .envelope-back .names {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 30px;
+            width: 100%;
+        }
+
+        .envelope-front .names p,
+        .envelope-back .names p {
+            font-size: 2.8rem;
+            font-weight: 300;
+            letter-spacing: 15px;
+            text-transform: uppercase;
+            margin: 0;
+        }
+
+        .envelope-front .subtitle,
+        .envelope-back .subtitle {
+            font-size: 1.5rem;
+            font-weight: 300;
+            letter-spacing: 3px;
+        }
+
+        .swipe-instruction {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: #C5B190;
+            background: white;
+            padding: 15px 30px;
+            border-radius: 30px;
+            font-size: 1rem;
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 300;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            white-space: nowrap;
+        }
+
+        /* Mise à jour des transformations pour les slides */
+        .pages.slide-1 {
+            transform: translateX(0);
+        }
+
+        .pages.slide-2 {
+            transform: translateX(-100vw);
+        }
+
+        .pages.slide-3 {
+            transform: translateX(-200vw);
+        }
+
+        @media (max-width: 550px) {
+            .envelope {
+                width: 320px;
+                height: 200px;
+            }
+            .envelope-front .names p,
+            .envelope-back .names p {
+                font-size: 2rem;
+                letter-spacing: 8px;
+            }
+            .envelope-front .subtitle,
+            .envelope-back .subtitle {
+                font-size: 1.2rem;
+                letter-spacing: 2px;
+            }
+        }
     </style>
 </head>
 <body>
@@ -432,11 +582,27 @@
     </div>
 
     <div class="pages" id="pages">
+        <!-- Page enveloppe -->
+        <div class="page envelope-page">
+            <div class="envelope" id="envelope">
+                <div class="envelope-flap"></div>
+                <div class="envelope-front"></div>
+                <div class="envelope-back">
+                    <br><br><br>
+                    <div class="names">
+                        <p>ELIE & NOA</p>
+                    </div>
+                    <div class="subtitle">Faire-part de mariage</div>
+                </div>
+            </div>
+            <div class="swipe-instruction">Touchez l'enveloppe pour l'ouvrir</div>
+        </div>
+
         <!-- Invitation -->
         <div class="page invitation">
             <img src="{{ url_for('static', filename='carteInvitation.jpg') }}" alt="Invitation Mariage">
-<div class="swipe">Glissez vers la gauche pour répondre</div>
-            </div>
+            <div class="swipe">Glissez vers la gauche pour répondre</div>
+        </div>
 
         <!-- Formulaire -->
         <div class="page form-page">
@@ -483,6 +649,8 @@
         const pages = document.getElementById('pages');
         let startX = null;
         let isSecondSlide = false;
+        let currentSlide = 1;
+        let envelopeOpened = false;
 
         presence.addEventListener('change', () => {
             nombreBlock.style.display = presence.value === 'Oui' ? 'block' : 'none';
@@ -494,52 +662,56 @@
         });
 
         const handleTouchStart = e => {
+            if (!envelopeOpened) return; // Empêcher le swipe si l'enveloppe n'est pas ouverte
             startX = e.touches[0].clientX;
         };
+
         const handleTouchMove = e => {
-    if (!startX) return;
-    const diff = startX - e.touches[0].clientX;
+            if (!startX || !envelopeOpened) return;
+            const diff = startX - e.touches[0].clientX;
 
-    if (!isSecondSlide && diff > 50) {
-        pages.style.transform = 'translateX(-100vw)';
-        isSecondSlide = true;
-    } else if (isSecondSlide && diff < -50) {
-        pages.style.transform = 'translateX(0)';
-        isSecondSlide = false;
-    }
-};
-
-
+            if (currentSlide === 2 && diff > 50) {
+                pages.classList.remove('slide-2');
+                pages.classList.add('slide-3');
+                currentSlide = 3;
+            } else if (currentSlide === 3 && diff < -50) {
+                pages.classList.remove('slide-3');
+                pages.classList.add('slide-2');
+                currentSlide = 2;
+            }
+        };
 
         const handleTouchEnd = () => {
             startX = null;
         };
 
         pages.addEventListener('touchstart', handleTouchStart, { passive: true });
-        pages.addEventListener('touchmove', handleTouchMove, { passive: false });
+        pages.addEventListener('touchmove', handleTouchMove, { passive: true });
         pages.addEventListener('touchend', handleTouchEnd, { passive: true });
 
         // Gestion de la souris (pour desktop)
         let isMouseDown = false;
 
         pages.addEventListener('mousedown', e => {
+            if (!envelopeOpened) return;
             isMouseDown = true;
             startX = e.clientX;
         });
 
-     pages.addEventListener('mousemove', e => {
-    if (!isMouseDown || !startX) return;
-    const diff = startX - e.clientX;
+        pages.addEventListener('mousemove', e => {
+            if (!isMouseDown || !startX || !envelopeOpened) return;
+            const diff = startX - e.clientX;
 
-    if (!isSecondSlide && diff > 50) {
-        pages.style.transform = 'translateX(-100vw)';
-        isSecondSlide = true;
-    } else if (isSecondSlide && diff < -50) {
-        pages.style.transform = 'translateX(0)';
-        isSecondSlide = false;
-    }
-});
-
+            if (currentSlide === 2 && diff > 50) {
+                pages.classList.remove('slide-2');
+                pages.classList.add('slide-3');
+                currentSlide = 3;
+            } else if (currentSlide === 3 && diff < -50) {
+                pages.classList.remove('slide-3');
+                pages.classList.add('slide-2');
+                currentSlide = 2;
+            }
+        });
 
         pages.addEventListener('mouseup', () => {
             isMouseDown = false;
@@ -606,10 +778,28 @@
         function closeConfirmation() {
             document.getElementById('overlay').style.display = 'none';
             document.getElementById('confirmationPopup').style.display = 'none';
-            // Return to first slide
-            pages.style.transform = 'translateX(0)';
-            isSecondSlide = false;
+            // Return to invitation card (slide 2) instead of envelope
+            pages.classList.remove('slide-3');
+            pages.classList.add('slide-2');
+            currentSlide = 2;
         }
+
+        // Gestion de l'enveloppe
+        const envelope = document.getElementById('envelope');
+        envelope.addEventListener('click', () => {
+            if (!envelopeOpened) {
+                envelope.classList.add('opened');
+                envelopeOpened = true;
+
+                // Attendre la fin de l'animation de l'enveloppe avant de passer à la slide suivante
+                setTimeout(() => {
+                    pages.classList.add('slide-2');
+                    currentSlide = 2;
+                    // Démarrer la musique
+                    tryUnmute();
+                }, 1000);
+            }
+        });
     </script>
 </body>
 </html>
