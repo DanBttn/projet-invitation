@@ -6,6 +6,79 @@
     <title>Mariage Elie & Noa</title>
     <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600&family=Montserrat:wght@300;400&display=swap" rel="stylesheet">
     <style>
+        .audio-controls {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: rgba(255, 255, 255, 0.9);
+            padding: 10px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .audio-controls button {
+            width: auto;
+            padding: 8px 12px;
+            margin: 0;
+            height: auto;
+        }
+        #volumeControl {
+            width: 100px;
+        }
+    </style>
+    <audio id="bgMusic" autoplay loop muted>
+        <source src="{{ url_for('static', filename='audio/marry-you-official-lyric-video.mp3') }}" type="audio/mp3" >
+    </audio>
+    <script>
+        // Attendre que le DOM soit chargé
+        document.addEventListener('DOMContentLoaded', function() {
+            const audio = document.getElementById('bgMusic');
+
+            // Fonction pour démarrer l'audio
+            function startAudio() {
+                audio.muted = false;
+                audio.volume = 0.05;
+                audio.play();
+            }
+
+            // Démarrer l'audio après un court délai
+            setTimeout(startAudio, 1000);
+
+            // Créer les contrôles
+            const audioControls = document.createElement('div');
+            audioControls.className = 'audio-controls';
+
+            const playButton = document.createElement('button');
+            playButton.textContent = '⏸️ Pause';
+            playButton.onclick = function() {
+                if (audio.paused) {
+                    audio.play();
+                    playButton.textContent = '⏸️ Pause';
+                } else {
+                    audio.pause();
+                    playButton.textContent = '▶️ Jouer';
+                }
+            };
+
+            const volumeControl = document.createElement('input');
+            volumeControl.type = 'range';
+            volumeControl.id = 'volumeControl';
+            volumeControl.min = '0';
+            volumeControl.max = '100';
+            volumeControl.value = '30';
+            volumeControl.onchange = function() {
+                audio.volume = this.value / 100;
+            };
+
+            audioControls.appendChild(playButton);
+            audioControls.appendChild(volumeControl);
+            document.body.appendChild(audioControls);
+        });
+    </script>
+    <style>
         :root {
             --gold: #C5A572;
             --light-gold: #E5D5B7;
@@ -34,7 +107,6 @@
         .pages {
             display: flex;
             width: 200vw;
-            height: 100vh;
             height: 100dvh;
             transition: transform 0.5s ease-in-out;
             touch-action: pan-x;
@@ -42,7 +114,6 @@
 
         .page {
             width: 100vw;
-            height: 100vh;
             height: 100dvh;
             flex-shrink: 0;
         }
