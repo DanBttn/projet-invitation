@@ -77,7 +77,7 @@
 
         .pages {
             display: flex;
-            width: 300vw;
+            width: 200vw;
             height: 100dvh;
             transition: transform 0.5s ease-in-out;
             touch-action: pan-x;
@@ -87,6 +87,8 @@
             width: 100vw;
             height: 100dvh;
             flex-shrink: 0;
+            position: relative;
+            overflow-y: auto;
         }
 
         .invitation {
@@ -141,27 +143,31 @@
             50% { transform: translateX(-50%) translateY(-10px); }
         }
 
+        .envelope-page {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--cream);
+        }
+
         .form-page {
             background: var(--cream);
             display: flex;
             justify-content: center;
             align-items: center;
             padding: 1rem;
-            height: 100%;
-            box-sizing: border-box;
-            overflow-y: auto;
-            -webkit-overflow-scrolling: touch;
+            min-height: 100dvh;
         }
 
         .form-container {
             background: white;
-            padding: 2rem;
+            padding: 2.5rem;
             border-radius: 10px;
             width: 100%;
-            max-width: 600px;
+            max-width: 500px;
             border: 1px solid var(--light-gold);
             box-shadow: 0 0 15px rgba(0, 0, 0, 0.05);
-            margin: 1rem;
+            margin: auto;
         }
 
         h1 {
@@ -240,8 +246,8 @@
 
         @media (max-width: 768px) {
             .form-container {
-                padding: 1.5rem;
-                margin: 0.5rem;
+                padding: 2rem;
+                margin: 1rem;
             }
 
             .invitation img {
@@ -261,24 +267,14 @@
             }
         }
 
-        @media (max-height: 600px) {
+        @media (max-height: 700px) {
+            .form-page {
+                align-items: flex-start;
+                padding: 2rem 1rem;
+            }
+            
             .form-container {
-                margin: 0.5rem;
-                padding: 1rem;
-            }
-
-            .invitation img {
-                max-height: 75vh;
-            }
-
-            h1 {
-                font-size: 1.4rem;
-                margin-bottom: 1rem;
-            }
-
-            input, select, button {
-                height: 45px;
-                margin-bottom: 0.8rem;
+                padding: 1.5rem;
             }
         }
 
@@ -412,27 +408,16 @@
 
         .swipe-back::before {
             content: '';
-            display: block;
-            width: 20px;
-            height: 20px;
-            margin: 8px auto 0;
-            border-right: 2px solid var(--gold);
-            border-bottom: 2px solid var(--gold);
-            transform: rotate(-45deg);
+    display: block;
+    width: 20px;
+    height: 20px;
+    margin: 8px auto 0;
+    border-left: 2px solid var(--gold);
+    border-bottom: 2px solid var(--gold);
+    transform: rotate(45deg);
         }
 
         /* Ajout des styles pour l'enveloppe */
-        .envelope-page {
-            width: 100vw;
-            height: 100dvh;
-            flex-shrink: 0;
-            background: var(--cream);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            position: relative;
-        }
-
         .envelope {
             width: 500px;
             height: 300px;
@@ -579,59 +564,79 @@
             }
         }
         #carte-sortie {
-    position: absolute;
-    bottom: 120px;
-    opacity: 0;
-    transform: translateY(0) scale(0.5);
-    width: min(80%, 350px);
-    max-height: 80vh;
-    transition: all 1.2s ease;
-    z-index: 0;
-    pointer-events: none;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-}
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0.5);
+            opacity: 0;
+            width: min(80%, 350px);
+            max-height: 80vh;
+            transition: all 1.2s ease;
+            z-index: 0;
+            pointer-events: none;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
 
-/* Sortie initiale de la carte vers le haut */
-.envelope.opened ~ #carte-sortie.apparue {
-    opacity: 1;
-    transform: translateY(-120px) scale(1.1);
-    z-index: 10;
-}
+        /* Sortie initiale de la carte vers le haut */
+        .envelope.opened ~ #carte-sortie.apparue {
+            opacity: 1;
+            transform: translate(-50%, -50%) scale(1);
+            z-index: 10;
+        }
 
-/* Expansion finale de la carte en plein écran */
-#carte-sortie.expansion {
-    transition: all 1s ease;
-    transform: translateY(0) scale(1);
-    bottom: 0;
-    width: 100%;
-    max-width: 100%;
-    height: 100dvh;
-    object-fit: contain;
-    opacity: 1;
-    pointer-events: auto;
-}
+        /* Expansion finale de la carte en plein écran */
+        #carte-sortie.expansion {
+            width: 100%;
+            max-width: 100%;
+            height: 100dvh;
+            object-fit: contain;
+            opacity: 1;
+            pointer-events: auto;
+        }
 
-/* Animation douce pour le texte swipe */
-.swipe {
-    position: absolute;
-    bottom: 30px;
-    left: 50%;
-    transform: translateX(-50%);
-    color: var(--gold);
-    background: rgba(255, 255, 255, 0.95);
-    padding: 12px 20px;
-    border-radius: 25px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-    white-space: nowrap;
-    font-size: 0.95rem;
-    opacity: 0;
-    transition: opacity 1s ease;
-}
+        /* Animation douce pour le texte swipe */
+        .swipe {
+            position: absolute;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: var(--gold);
+            background: rgba(255, 255, 255, 0.95);
+            padding: 12px 20px;
+            border-radius: 25px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            white-space: nowrap;
+            font-size: 0.95rem;
+            opacity: 0;
+            transition: opacity 1s ease;
+            z-index: 20;
+        }
 
-.swipe.visible {
-    opacity: 1;
-}
+        .swipe.visible {
+            opacity: 1;
+        }
 
+        /* Message pour l'enveloppe */
+        .envelope-instruction {
+            position: absolute;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: var(--gold);
+            background: rgba(255, 255, 255, 0.95);
+            padding: 12px 20px;
+            border-radius: 25px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            white-space: nowrap;
+            font-size: 0.95rem;
+            z-index: 20;
+            opacity: 1;
+            transition: opacity 0.5s ease;
+        }
+
+        .envelope.opened ~ .envelope-instruction {
+            opacity: 0;
+        }
 
     </style>
 </head>
@@ -659,13 +664,15 @@
                 </div>
             </div>
 
+            <!-- Message pour l'enveloppe -->
+            <div class="envelope-instruction">Appuyez sur l'enveloppe pour l'ouvrir</div>
+
             <!-- Carte animée -->
             <img id="carte-sortie" src="{{ url_for('static', filename='carteInvitation.jpg') }}" alt="Invitation Mariage">
 
             <!-- Swipe -->
             <div class="swipe">Glissez vers la gauche pour répondre</div>
         </div>
-
 
         <!-- Formulaire -->
         <div class="page form-page">
@@ -699,7 +706,7 @@
 
                 <button type="submit">Confirmer ma réponse</button>
                 <div style="text-align: center;">
-                    <div class="swipe-back">Glissez vers la droite pour retourner à l'invitation</div>
+                    <div class="swipe-back">Glissez pour retourner à l'invitation</div>
                 </div>
             </form>
         </div>
@@ -847,27 +854,102 @@
             currentSlide = 2;
         }
 
-        // Gestion de l'enveloppe
+        // Gestion de l'enveloppe et des swipes
         const envelope = document.getElementById('envelope');
+        const carte = document.getElementById('carte-sortie');
+        const swipe = document.querySelector('.swipe');
+        let cardAppeared = false;
+
         envelope.addEventListener('click', () => {
             if (!envelopeOpened) {
                 envelope.classList.add('opened');
                 envelopeOpened = true;
 
-                const carte = document.getElementById('carte-sortie');
-                const swipe = document.querySelector('.swipe');
-
-                // Délai pour que l’ouverture de l’enveloppe se voit bien
                 setTimeout(() => {
                     carte.classList.add('apparue');
+                    cardAppeared = true;
 
-                    // Après qu’elle ait bien "sorti"
                     setTimeout(() => {
                         carte.classList.add('expansion');
                         swipe.classList.add('visible');
                         tryUnmute();
-                    }, 1000);
-                }, 800); // temps pour laisser l’enveloppe s’ouvrir
+                    }, 1200);
+                }, 800);
+            }
+        });
+
+        // Gestion du swipe
+        let touchStartX = null;
+        let touchStartY = null;
+
+        document.addEventListener('touchstart', (e) => {
+            if (!cardAppeared) return;
+            touchStartX = e.touches[0].clientX;
+            touchStartY = e.touches[0].clientY;
+        }, { passive: true });
+
+        document.addEventListener('touchmove', (e) => {
+            if (!cardAppeared || !touchStartX) return;
+
+            const touchEndX = e.touches[0].clientX;
+            const touchEndY = e.touches[0].clientY;
+            const deltaX = touchStartX - touchEndX;
+            const deltaY = Math.abs(touchStartY - e.touches[0].clientY);
+
+            if (Math.abs(deltaX) > deltaY && Math.abs(deltaX) > 50) {
+                if (deltaX > 0 && !pages.classList.contains('slide-2')) { // Swipe vers la gauche
+                    pages.classList.add('slide-2');
+                } else if (deltaX < 0 && pages.classList.contains('slide-2')) { // Swipe vers la droite
+                    pages.classList.remove('slide-2');
+                }
+                touchStartX = null;
+                touchStartY = null;
+            }
+        }, { passive: true });
+
+        document.addEventListener('touchend', () => {
+            touchStartX = null;
+            touchStartY = null;
+        }, { passive: true });
+
+        // Support pour desktop
+        let mouseStartX = null;
+        let mouseStartY = null;
+
+        document.addEventListener('mousedown', (e) => {
+            if (!cardAppeared) return;
+            mouseStartX = e.clientX;
+            mouseStartY = e.clientY;
+        });
+
+        document.addEventListener('mousemove', (e) => {
+            if (!cardAppeared || !mouseStartX) return;
+
+            const mouseEndX = e.clientX;
+            const mouseEndY = e.clientY;
+            const deltaX = mouseStartX - mouseEndX;
+            const deltaY = Math.abs(mouseStartY - e.clientY);
+
+            if (Math.abs(deltaX) > deltaY && Math.abs(deltaX) > 50) {
+                if (deltaX > 0 && !pages.classList.contains('slide-2')) { // Swipe vers la gauche
+                    pages.classList.add('slide-2');
+                } else if (deltaX < 0 && pages.classList.contains('slide-2')) { // Swipe vers la droite
+                    pages.classList.remove('slide-2');
+                }
+                mouseStartX = null;
+                mouseStartY = null;
+            }
+        });
+
+        document.addEventListener('mouseup', () => {
+            mouseStartX = null;
+            mouseStartY = null;
+        });
+
+        // Démarrer la musique quand la carte est en plein écran
+        carte.addEventListener('transitionend', (e) => {
+            if (e.propertyName === 'transform' && carte.classList.contains('expansion')) {
+                tryUnmute();
             }
         });
 
