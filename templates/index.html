@@ -578,6 +578,61 @@
                 letter-spacing: 2px;
             }
         }
+        #carte-sortie {
+    position: absolute;
+    bottom: 120px;
+    opacity: 0;
+    transform: translateY(0) scale(0.5);
+    width: min(80%, 350px);
+    max-height: 80vh;
+    transition: all 1.2s ease;
+    z-index: 0;
+    pointer-events: none;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+/* Sortie initiale de la carte vers le haut */
+.envelope.opened ~ #carte-sortie.apparue {
+    opacity: 1;
+    transform: translateY(-120px) scale(1.1);
+    z-index: 10;
+}
+
+/* Expansion finale de la carte en plein écran */
+#carte-sortie.expansion {
+    transition: all 1s ease;
+    transform: translateY(0) scale(1);
+    bottom: 0;
+    width: 100%;
+    max-width: 100%;
+    height: 100dvh;
+    object-fit: contain;
+    opacity: 1;
+    pointer-events: auto;
+}
+
+/* Animation douce pour le texte swipe */
+.swipe {
+    position: absolute;
+    bottom: 30px;
+    left: 50%;
+    transform: translateX(-50%);
+    color: var(--gold);
+    background: rgba(255, 255, 255, 0.95);
+    padding: 12px 20px;
+    border-radius: 25px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    white-space: nowrap;
+    font-size: 0.95rem;
+    opacity: 0;
+    transition: opacity 1s ease;
+}
+
+.swipe.visible {
+    opacity: 1;
+}
+
+
     </style>
 </head>
 <body>
@@ -603,14 +658,14 @@
                     <div class="subtitle">Faire-part de mariage</div>
                 </div>
             </div>
-            <div class="swipe-instruction">Touchez l'enveloppe pour l'ouvrir</div>
-        </div>
 
-        <!-- Invitation -->
-        <div class="page invitation">
-            <img src="{{ url_for('static', filename='carteInvitation.jpg') }}" alt="Invitation Mariage">
+            <!-- Carte animée -->
+            <img id="carte-sortie" src="{{ url_for('static', filename='carteInvitation.jpg') }}" alt="Invitation Mariage">
+
+            <!-- Swipe -->
             <div class="swipe">Glissez vers la gauche pour répondre</div>
         </div>
+
 
         <!-- Formulaire -->
         <div class="page form-page">
@@ -799,15 +854,23 @@
                 envelope.classList.add('opened');
                 envelopeOpened = true;
 
-                // Attendre la fin de l'animation de l'enveloppe avant de passer à la slide suivante
+                const carte = document.getElementById('carte-sortie');
+                const swipe = document.querySelector('.swipe');
+
+                // Délai pour que l’ouverture de l’enveloppe se voit bien
                 setTimeout(() => {
-                    pages.classList.add('slide-2');
-                    currentSlide = 2;
-                    // Démarrer la musique
-                    tryUnmute();
-                }, 1000);
+                    carte.classList.add('apparue');
+
+                    // Après qu’elle ait bien "sorti"
+                    setTimeout(() => {
+                        carte.classList.add('expansion');
+                        swipe.classList.add('visible');
+                        tryUnmute();
+                    }, 1000);
+                }, 800); // temps pour laisser l’enveloppe s’ouvrir
             }
         });
+
     </script>
 </body>
 </html>
