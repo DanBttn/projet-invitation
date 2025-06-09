@@ -29,54 +29,25 @@
             width: 100px;
         }
     </style>
-    <audio id="bgMusic" autoplay loop muted>
-        <source src="{{ url_for('static', filename='audio/marry-you-official-lyric-video.mp3') }}" type="audio/mp3" >
+    <audio id="bgMusic" autoplay loop muted playsinline>
+        <source src="{{ url_for('static', filename='audio/marry-you-official-lyric-video.mp3') }}" type="audio/mp3">
     </audio>
     <script>
-        // Attendre que le DOM soit chargé
-        document.addEventListener('DOMContentLoaded', function() {
+        function tryUnmute() {
             const audio = document.getElementById('bgMusic');
+            audio.muted = false;
+            audio.volume = 0.05;
+            audio.play().catch(function(error) {
+                console.log("Unmute failed:", error);
+            });
+        }
 
-            // Fonction pour démarrer l'audio
-            function startAudio() {
-                audio.muted = false;
-                audio.volume = 0.05;
-                audio.play();
-            }
-
-            // Démarrer l'audio après un court délai
-            setTimeout(startAudio, 1000);
-
-            // Créer les contrôles
-            const audioControls = document.createElement('div');
-            audioControls.className = 'audio-controls';
-
-            const playButton = document.createElement('button');
-            playButton.textContent = '⏸️ Pause';
-            playButton.onclick = function() {
-                if (audio.paused) {
-                    audio.play();
-                    playButton.textContent = '⏸️ Pause';
-                } else {
-                    audio.pause();
-                    playButton.textContent = '▶️ Jouer';
-                }
-            };
-
-            const volumeControl = document.createElement('input');
-            volumeControl.type = 'range';
-            volumeControl.id = 'volumeControl';
-            volumeControl.min = '0';
-            volumeControl.max = '100';
-            volumeControl.value = '30';
-            volumeControl.onchange = function() {
-                audio.volume = this.value / 100;
-            };
-
-            audioControls.appendChild(playButton);
-            audioControls.appendChild(volumeControl);
-            document.body.appendChild(audioControls);
-        });
+        // Essayer de démarrer le son dès que possible
+        document.addEventListener('DOMContentLoaded', tryUnmute);
+        window.addEventListener('load', tryUnmute);
+        window.addEventListener('scroll', tryUnmute, { once: true });
+        window.addEventListener('click', tryUnmute, { once: true });
+        window.addEventListener('touchstart', tryUnmute, { once: true });
     </script>
     <style>
         :root {
