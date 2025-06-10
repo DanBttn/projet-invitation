@@ -111,8 +111,8 @@ def submit():
                                message_type="error",
                                total_participants=get_total_participants())
 
-    succes, message = sauvegarder_excel(nom, prenom, telephone, presence, nombre_personnes)
-    if succes:
+    success, message = sauvegarder_excel(nom, prenom, telephone, presence, nombre_personnes)
+    if success:
         return render_template('index.html',
                                message="Votre réponse a été enregistrée.",
                                message_type="success",
